@@ -22,11 +22,40 @@
             [cdkDropListData]="column.tasks"
             (cdkDropListDropped)="drop($event)"
           >
-            <div class="task" *ngFor="let item of column.tasks" cdkDrag>
-              {{ item }}
+            <div
+              style="position: relative"
+              class="task"
+              *ngFor="let item of column.tasks"
+              cdkDrag
+            >
+              <div>
+                {{ item }}
+                <button
+                  style="position: absolute; right: 0"
+                  (click)="deleteItem(item, column)"
+                >
+                  -
+                </button>
+              </div>
             </div>
           </div>
-          <div class="button" (click)="addTask('cos', column)">Dodaj kartę</div>
+          <div *ngIf="canAdd">
+            <mat-form-field appearance="fill">
+              <input
+                matInput
+                mat-icon-button
+                #add
+                value="Template task"
+              /><mat-icon
+                matSuffix
+                style="cursor: pointer"
+                (click)="addItem(add.value, column)"
+              >
+                done
+              </mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="button" (click)="onClick()">Dodaj kartę</div>
         </div>
       </div>
     </div>

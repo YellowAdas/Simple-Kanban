@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -13,7 +13,15 @@ import { Column } from 'src/app/models/column.model';
   styleUrls: ['./main-view.component.scss'],
 })
 export class MainViewComponent {
+  ngOnInit() {
+    this.getIds();
+  }
+
   constructor() {}
+
+  ids: string[] = [];
+  canAdd = false;
+  value = '';
 
   board: Board = new Board('Test Board', [
     new Column('Ideas', [
@@ -42,12 +50,8 @@ export class MainViewComponent {
     ]),
   ]);
 
-  dropColumn(event: CdkDragDrop<Column[]>) {
-    moveItemInArray(
-      this.board.columns,
-      event.previousIndex,
-      event.currentIndex
-    );
+  dropColumn(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.ids, event.previousIndex, event.currentIndex);
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -67,7 +71,22 @@ export class MainViewComponent {
     }
   }
 
-  addTask(columnData: string, column: Column) {
-    column.tasks.push(columnData);
+  onClick() {
+    this.canAdd = !this.canAdd;
+  }
+
+  addItem(newItem: string, column: Column) {
+    column.tasks.push(newItem);
+    this.canAdd = !this.canAdd;
+  }
+
+  getIds() {
+    this.ids = this.board.columns.map((s) => s.name);
+    console.log(this.ids);
+  }
+
+  deleteItem(name: string, column: Column) {
+    const id = column.tasks.indexOf(name);
+    column.tasks.splice(id, 1);
   }
 }
