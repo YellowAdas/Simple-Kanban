@@ -1,0 +1,35 @@
+<div *ngIf="board$ | async as board">
+  <div class="board-column" *ngFor="let column of board.columns">
+    <div class="column-title">{{ column.name }}</div>
+    <div
+      class="task-container"
+      cdkDropList
+      [cdkDropListData]="column.tasks"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div class="task" *ngFor="let item of column.tasks; index as i" cdkDrag>
+        <div *ngIf="item" style="position: relative; width: 100%">
+          {{ item }}
+          <button
+            style="position: absolute; right: 0"
+            (click)="deleteItem(item, column)"
+          >
+            -
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <mat-form-field appearance="fill">
+        <input matInput mat-icon-button #add value="Template task" /><mat-icon
+          matSuffix
+          style="cursor: pointer"
+          (click)="addItem(add.value, column)"
+        >
+          done
+        </mat-icon>
+      </mat-form-field>
+    </div>
+    <div class="button" (click)="toggleCanAdd()">Dodaj kartę</div>
+  </div>
+</div>

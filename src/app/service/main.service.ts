@@ -7,39 +7,29 @@ import { Column } from '../models/column.model';
   providedIn: 'root',
 })
 export class MainService {
-  constructor() {}
+  constructor() {
+    const toParse = localStorage.getItem('TestBoard');
+    const columns: Column[] = toParse ? JSON.parse(toParse) : [];
 
+    this.board$ = new BehaviorSubject<Board>(new Board('Test Board', columns));
+  }
 
-  board$ = new BehaviorSubject<Board>(
-    new Board('Test Board', [
-      new Column('Ideas', [
-        'Some random idea',
-        'Some random idea',
-        'Some random idea',
-      ]),
-      new Column('Tasks', [
-        'Some random task 1',
-        'Some random task 2',
-        'Some random task 3',
-        'Some random task 4',
-      ]),
-      new Column('Todo', [
-        'Get to work',
-        'Pick up groceries',
-        'Go home',
-        'Fall asleep',
-      ]),
-      new Column('Done', [
-        'Get up',
-        'Brush teeth',
-        'Take a shower',
-        'Check e-mail',
-        'Walk dog',
-      ]),
-    ])
-  );
+  board$: BehaviorSubject<Board>;
+
+  writeToLocalStorage() {
+    localStorage.setItem(
+      'Test Board',
+      JSON.stringify(this.board$.value.columns)
+    );
+  }
 
   addColumn() {
     this.board$.value.columns.push(new Column('Nowa', ['']));
+    this.writeToLocalStorage();
+  }
+
+  addTask(nameItem: string, column: Column) {
+    column.tasks.push(nameItem);
+    this.writeToLocalStorage();
   }
 }
