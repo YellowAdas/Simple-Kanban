@@ -13,7 +13,11 @@
     </div>
 
     <div class="board-wrapper">
-      <div class="board-columns" cdkDropListGroup>
+      <div
+        *ngIf="board$ | async as board"
+        class="board-columns"
+        cdkDropListGroup
+      >
         <div class="board-column" *ngFor="let column of board.columns">
           <div class="column-title">{{ column.name }}</div>
           <div
@@ -22,13 +26,8 @@
             [cdkDropListData]="column.tasks"
             (cdkDropListDropped)="drop($event)"
           >
-            <div
-              style="position: relative"
-              class="task"
-              *ngFor="let item of column.tasks"
-              cdkDrag
-            >
-              <div>
+            <div class="task" *ngFor="let item of column.tasks" cdkDrag>
+              <div *ngIf="item" style="position: relative; width: 100%">
                 {{ item }}
                 <button
                   style="position: absolute; right: 0"
@@ -39,7 +38,7 @@
               </div>
             </div>
           </div>
-          <div *ngIf="canAdd">
+          <div>
             <mat-form-field appearance="fill">
               <input
                 matInput
@@ -55,9 +54,10 @@
               </mat-icon>
             </mat-form-field>
           </div>
-          <div class="button" (click)="onClick()">Dodaj kartę</div>
+          <div class="button" (click)="toggleCanAdd()">Dodaj kartę</div>
         </div>
       </div>
     </div>
   </div>
+  <button (click)="newColumn()">Nowa kolumna</button>
 </div>

@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -6,6 +6,8 @@ import {
 } from '@angular/cdk/drag-drop';
 import { Board } from 'src/app/models/board.model';
 import { Column } from 'src/app/models/column.model';
+import { MainService } from 'src/app/service/main.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-main-view',
@@ -17,38 +19,13 @@ export class MainViewComponent {
     this.getIds();
   }
 
-  constructor() {}
+  constructor(private mainService: MainService) {}
 
-  ids: string[] = [];
   canAdd = false;
-  value = '';
+  board$: Observable<Board> = this.mainService.board$;
+  ids: string[] = [];
 
-  board: Board = new Board('Test Board', [
-    new Column('Ideas', [
-      'Some random idea',
-      'Some random idea',
-      'Some random idea',
-    ]),
-    new Column('Tasks', [
-      'Some random task 1',
-      'Some random task 2',
-      'Some random task 3',
-      'Some random task 4',
-    ]),
-    new Column('Todo', [
-      'Get to work',
-      'Pick up groceries',
-      'Go home',
-      'Fall asleep',
-    ]),
-    new Column('Done', [
-      'Get up',
-      'Brush teeth',
-      'Take a shower',
-      'Check e-mail',
-      'Walk dog',
-    ]),
-  ]);
+  value = '';
 
   dropColumn(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.ids, event.previousIndex, event.currentIndex);
@@ -71,22 +48,26 @@ export class MainViewComponent {
     }
   }
 
-  onClick() {
-    this.canAdd = !this.canAdd;
-  }
-
   addItem(newItem: string, column: Column) {
     column.tasks.push(newItem);
     this.canAdd = !this.canAdd;
   }
 
   getIds() {
-    this.ids = this.board.columns.map((s) => s.name);
+    this.ids = this.mainService.board$.value.columns.map((s) => s.name);
     console.log(this.ids);
   }
 
   deleteItem(name: string, column: Column) {
     const id = column.tasks.indexOf(name);
     column.tasks.splice(id, 1);
+  }
+
+  newColumn() {
+    this.mainService.addColumn();
+  }
+
+  toggleCanAdd() {
+    this.canAdd = !this.canAdd;
   }
 }
